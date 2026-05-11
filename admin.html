@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 — 상담 신청 관리</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #f2f2f7;
+  --surface: #ffffff;
+  --text:    #1d1d1f;
+  --sub:     #6e6e73;
+  --border:  #e5e5ea;
+  --accent:  #2aabee;
+  --green:   #34c759;
+  --yellow:  #ff9f0a;
+  --red:     #ff453a;
+  --purple:  #bf5af2;
+  --font: 'Noto Sans KR', -apple-system, sans-serif;
+}
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LOGIN ── */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  padding: 20px;
+}
+.login-box {
+  background: #1c1c1e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.login-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+.login-logo em { font-style: normal; color: var(--accent); }
+.login-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 32px; }
+.login-input {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  font-size: 15px;
+  color: white;
+  font-family: var(--font);
+  outline: none;
+  margin-bottom: 12px;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+.login-input:focus { border-color: var(--accent); background: rgba(42,171,238,0.08); }
+.login-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.15s;
+}
+.login-btn:hover { opacity: 0.88; }
+.login-err { font-size: 13px; color: var(--red); margin-top: 10px; min-height: 18px; }
+
+/* ── ADMIN LAYOUT ── */
+.admin-wrap { display: none; min-height: 100vh; }
+.admin-wrap.show { display: block; }
+
+.adm-header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.adm-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; }
+.adm-logo em { font-style: normal; color: var(--accent); }
+.adm-header-right { display: flex; align-items: center; gap: 12px; }
+.adm-logout {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--sub);
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+.adm-logout:hover { border-color: var(--red); color: var(--red); }
+
+.adm-body { padding: 28px; }
+
+/* Stats */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+.stat-label { font-size: 12px; color: var(--sub); font-weight: 500; margin-bottom: 8px; }
+.stat-val { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
+.stat-val.c-new    { color: var(--accent); }
+.stat-val.c-review { color: var(--yellow); }
+.stat-val.c-done   { color: var(--green); }
+.stat-val.c-hold   { color: var(--purple); }
+.stat-val.c-all    { color: var(--text); }
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--sub);
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.on { background: var(--accent); border-color: var(--accent); color: white; }
+.toolbar-right { margin-left: auto; display: flex; gap: 8px; }
+.btn-danger-sm {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #ffd0cc;
+  background: #fff5f4;
+  color: var(--red);
+  font-family: var(--font);
+  transition: all 0.15s;
+  display: none;
+}
+.btn-danger-sm.show { display: inline-flex; align-items: center; gap: 4px; }
+.btn-danger-sm:hover { background: var(--red); color: white; border-color: var(--red); }
+
+/* Table */
+.tbl-wrap {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.tbl-empty {
+  padding: 60px;
+  text-align: center;
+  color: var(--sub);
+  font-size: 15px;
+}
+.tbl-empty-icon { font-size: 36px; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; }
+thead { background: #f9f9fb; }
+th {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+th.chk { width: 44px; text-align: center; }
+td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #f2f2f7;
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; cursor: pointer; }
+td.chk { text-align: center; }
+input[type="checkbox"] {
+  width: 16px; height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-new    { background: rgba(42,171,238,0.12);  color: #0088cc; }
+.badge-review { background: rgba(255,159,10,0.12);  color: #d47700; }
+.badge-done   { background: rgba(52,199,89,0.12);   color: #1a9e3f; }
+.badge-hold   { background: rgba(191,90,242,0.12);  color: #9b37c8; }
+.plan-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+}
+.plan-tag.starter { background: rgba(42,171,238,0.1); color: #0088cc; }
+.plan-tag.growth  { background: rgba(52,199,89,0.1);  color: #1a9e3f; }
+.plan-tag.custom  { background: rgba(191,90,242,0.1); color: #9b37c8; }
+.content-preview {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sub);
+}
+
+/* Status Select */
+.status-sel {
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  outline: none;
+  background: white;
+}
+.status-sel:focus { border-color: var(--accent); }
+
+/* ── DETAIL MODAL ── */
+.detail-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.detail-overlay.open { display: flex; }
+.detail-box {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 36px;
+  position: relative;
+  animation: popIn 0.2s ease;
+}
+@keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+.detail-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--sub);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.detail-close:hover { background: var(--border); }
+.detail-head {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.detail-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.detail-date { font-size: 13px; color: var(--sub); }
+.detail-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.detail-key {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+  min-width: 80px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.detail-val { font-size: 14px; line-height: 1.6; word-break: break-word; }
+.detail-content {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.btn-action {
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  border: none;
+  transition: all 0.15s;
+}
+.btn-delete { background: #fff5f4; color: var(--red); margin-left: auto; }
+.btn-delete:hover { background: var(--red); color: white; }
+.detail-status-wrap { display: flex; align-items: center; gap: 8px; }
+.detail-status-label { font-size: 13px; color: var(--sub); }
+.detail-status-sel {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-family: var(--font);
+  cursor: pointer;
+  outline: none;
+  background: white;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .stat-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .adm-body { padding: 16px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .content-preview { max-width: 140px; }
+}
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">AI<em>Dev</em></div>
+    <div class="login-sub">관리자 페이지</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()" autofocus />
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ── ADMIN ── -->
+<div class="admin-wrap" id="admin-wrap">
+  <header class="adm-header">
+    <div class="adm-logo">AI<em>Dev</em> <span style="font-size:13px;font-weight:500;color:var(--sub);margin-left:6px;">상담 관리</span></div>
+    <div class="adm-header-right">
+      <span style="font-size:13px;color:var(--sub);" id="total-count"></span>
+      <button class="adm-logout" onclick="doLogout()">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="adm-body">
+    <!-- Stats -->
+    <div class="stat-row" id="stat-row">
+      <div class="stat-card"><div class="stat-label">전체</div><div class="stat-val c-all" id="s-all">0</div></div>
+      <div class="stat-card"><div class="stat-label">신규</div><div class="stat-val c-new" id="s-new">0</div></div>
+      <div class="stat-card"><div class="stat-label">검토중</div><div class="stat-val c-review" id="s-review">0</div></div>
+      <div class="stat-card"><div class="stat-label">완료</div><div class="stat-val c-done" id="s-done">0</div></div>
+      <div class="stat-card"><div class="stat-label">보류</div><div class="stat-val c-hold" id="s-hold">0</div></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="filter-btn on" data-filter="전체" onclick="setFilter(this)">전체</button>
+      <button class="filter-btn" data-filter="신규"   onclick="setFilter(this)">🔵 신규</button>
+      <button class="filter-btn" data-filter="검토중" onclick="setFilter(this)">🟡 검토중</button>
+      <button class="filter-btn" data-filter="완료"   onclick="setFilter(this)">🟢 완료</button>
+      <button class="filter-btn" data-filter="보류"   onclick="setFilter(this)">🟣 보류</button>
+      <div class="toolbar-right">
+        <button class="btn-danger-sm" id="bulk-del-btn" onclick="bulkDelete()">🗑 선택 삭제</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="tbl-wrap">
+      <div id="tbl-empty" class="tbl-empty" style="display:none;">
+        <div class="tbl-empty-icon">📭</div>
+        아직 상담 신청이 없습니다.
+      </div>
+      <table id="req-table">
+        <thead>
+          <tr>
+            <th class="chk"><input type="checkbox" id="check-all" onclick="toggleAll(this)" /></th>
+            <th>이름</th>
+            <th>연락처</th>
+            <th>플랜</th>
+            <th>내용</th>
+            <th>신청일</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody id="req-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL MODAL ── -->
+<div class="detail-overlay" id="detail-modal" onclick="handleDetailOverlay(event)">
+  <div class="detail-box" id="detail-box">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="detail-head">
+      <div>
+        <div class="detail-name" id="d-name"></div>
+        <div class="detail-date" id="d-date"></div>
+      </div>
+      <div class="detail-status-wrap">
+        <span class="detail-status-label">상태:</span>
+        <select class="detail-status-sel" id="d-status" onchange="updateDetailStatus()"></select>
+      </div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">연락처</div>
+      <div class="detail-val" id="d-contact"></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">관심 플랜</div>
+      <div class="detail-val" id="d-plan"></div>
+    </div>
+    <div class="detail-row" id="d-ref-row">
+      <div class="detail-key">참고 사이트</div>
+      <div class="detail-val"><a id="d-ref" href="#" target="_blank" style="color:var(--accent);"></a></div>
+    </div>
+    <div class="detail-row">
+      <div class="detail-key">내용</div>
+      <div class="detail-val" style="width:100%;">
+        <div class="detail-content" id="d-content"></div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn-action btn-delete" onclick="deleteDetail()">🗑 삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ 설정 ══ */
+const ADMIN_PW  = 'aidev2026';   // ← 비밀번호 변경 시 여기 수정
+const STORE_KEY = 'aidev_requests';
+const AUTH_KEY  = 'aidev_auth';
+
+let allRequests = [];
+let currentFilter = '전체';
+let currentDetailId = null;
+
+/* ══ 로그인 ══ */
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PW) {
+    sessionStorage.setItem(AUTH_KEY, '1');
+    showAdmin();
+  } else {
+    const err = document.getElementById('login-err');
+    err.textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+    setTimeout(() => err.textContent = '', 2500);
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(AUTH_KEY);
+  document.getElementById('admin-wrap').classList.remove('show');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+}
+
+function showAdmin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-wrap').classList.add('show');
+  loadData();
+}
+
+/* ══ 데이터 ══ */
+function loadData() {
+  allRequests = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+  renderStats();
+  renderTable();
+}
+
+function saveData() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(allRequests));
+}
+
+/* ══ 통계 ══ */
+function renderStats() {
+  const counts = { 전체: allRequests.length, 신규: 0, 검토중: 0, 완료: 0, 보류: 0 };
+  allRequests.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
+  document.getElementById('s-all').textContent    = counts['전체'];
+  document.getElementById('s-new').textContent    = counts['신규'];
+  document.getElementById('s-review').textContent = counts['검토중'];
+  document.getElementById('s-done').textContent   = counts['완료'];
+  document.getElementById('s-hold').textContent   = counts['보류'];
+  document.getElementById('total-count').textContent = `총 ${counts['전체']}건`;
+}
+
+/* ══ 테이블 렌더 ══ */
+function renderTable() {
+  const filtered = currentFilter === '전체'
+    ? allRequests
+    : allRequests.filter(r => r.status === currentFilter);
+
+  const tbody = document.getElementById('req-tbody');
+  const empty = document.getElementById('tbl-empty');
+  const table = document.getElementById('req-table');
+
+  if (filtered.length === 0) {
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  table.style.display = 'table';
+
+  tbody.innerHTML = filtered.map(r => `
+    <tr onclick="openDetail(${r.id})" data-id="${r.id}">
+      <td class="chk" onclick="event.stopPropagation()">
+        <input type="checkbox" class="row-chk" value="${r.id}" onchange="updateBulkBtn()" />
+      </td>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td>${esc(r.contact)}</td>
+      <td>${planTag(r.plan)}</td>
+      <td><div class="content-preview">${esc(r.content)}</div></td>
+      <td style="white-space:nowrap;color:var(--sub);font-size:13px;">${esc(r.date)}</td>
+      <td onclick="event.stopPropagation()">
+        <select class="status-sel" onchange="updateStatus(${r.id}, this.value)">
+          ${['신규','검토중','완료','보류'].map(s =>
+            `<option value="${s}" ${r.status===s?'selected':''}>${statusEmoji(s)} ${s}</option>`
+          ).join('')}
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function planTag(plan) {
+  const cls = { 'Starter':'starter','Growth':'growth','Custom':'custom' }[plan] || '';
+  return `<span class="plan-tag ${cls}">${plan || '미정'}</span>`;
+}
+
+function statusEmoji(s) {
+  return { 신규:'🔵', 검토중:'🟡', 완료:'🟢', 보류:'🟣' }[s] || '';
+}
+
+function badgeClass(s) {
+  return { 신규:'badge-new', 검토중:'badge-review', 완료:'badge-done', 보류:'badge-hold' }[s] || '';
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ══ 필터 ══ */
+function setFilter(btn) {
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('check-all').checked = false;
+  updateBulkBtn();
+  renderTable();
+}
+
+/* ══ 상태 변경 ══ */
+function updateStatus(id, newStatus) {
+  const r = allRequests.find(x => x.id === id);
+  if (r) { r.status = newStatus; saveData(); renderStats(); }
+}
+
+/* ══ 체크박스 ══ */
+function toggleAll(chk) {
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = chk.checked);
+  updateBulkBtn();
+}
+
+function updateBulkBtn() {
+  const checked = document.querySelectorAll('.row-chk:checked').length;
+  const btn = document.getElementById('bulk-del-btn');
+  if (checked > 0) {
+    btn.classList.add('show');
+    btn.textContent = `🗑 선택 삭제 (${checked})`;
+  } else {
+    btn.classList.remove('show');
+  }
+  const all = document.querySelectorAll('.row-chk').length;
+  document.getElementById('check-all').checked = checked === all && all > 0;
+}
+
+function bulkDelete() {
+  const ids = [...document.querySelectorAll('.row-chk:checked')].map(c => Number(c.value));
+  if (!ids.length) return;
+  if (!confirm(`${ids.length}건을 삭제하시겠습니까?`)) return;
+  allRequests = allRequests.filter(r => !ids.includes(r.id));
+  saveData();
+  renderStats();
+  renderTable();
+  updateBulkBtn();
+}
+
+/* ══ 상세 모달 ══ */
+function openDetail(id) {
+  const r = allRequests.find(x => x.id === id);
+  if (!r) return;
+  currentDetailId = id;
+
+  document.getElementById('d-name').textContent    = r.name;
+  document.getElementById('d-date').textContent    = r.date;
+  document.getElementById('d-contact').textContent = r.contact;
+  document.getElementById('d-plan').innerHTML      = planTag(r.plan);
+  document.getElementById('d-content').textContent = r.content;
+
+  const refRow = document.getElementById('d-ref-row');
+  if (r.ref) {
+    refRow.style.display = 'flex';
+    const a = document.getElementById('d-ref');
+    a.href = r.ref.startsWith('http') ? r.ref : 'https://' + r.ref;
+    a.textContent = r.ref;
+  } else {
+    refRow.style.display = 'none';
+  }
+
+  const sel = document.getElementById('d-status');
+  sel.innerHTML = ['신규','검토중','완료','보류'].map(s =>
+    `<option value="${s}" ${r.status===s?'selected':''}>${statusEmoji(s)} ${s}</option>`
+  ).join('');
+
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  currentDetailId = null;
+}
+
+function handleDetailOverlay(e) {
+  if (e.target === document.getElementById('detail-modal')) closeDetail();
+}
+
+function updateDetailStatus() {
+  const newStatus = document.getElementById('d-status').value;
+  updateStatus(currentDetailId, newStatus);
+  renderTable();
+}
+
+function deleteDetail() {
+  if (!confirm('이 상담 신청을 삭제하시겠습니까?')) return;
+  allRequests = allRequests.filter(r => r.id !== currentDetailId);
+  saveData();
+  renderStats();
+  renderTable();
+  closeDetail();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+/* ══ 초기 실행 ══ */
+if (sessionStorage.getItem(AUTH_KEY) === '1') {
+  showAdmin();
+} else {
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+/* ══ 실시간 갱신 (다른 탭에서 신청 들어오면 자동 반영) ══ */
+window.addEventListener('storage', e => {
+  if (e.key === STORE_KEY) { loadData(); }
+});
+</script>
+</body>
+</html>
