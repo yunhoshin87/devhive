@@ -21,6 +21,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: 143f2323446f7c53f496c331d3f6ebd2
           command: pages deploy . --project-name=devhive-mkr
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
