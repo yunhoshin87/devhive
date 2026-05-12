@@ -17,10 +17,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Prepare static site
+        run: |
+          mkdir dist
+          cp index.html admin.html dist/
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 143f2323446f7c53f496c331d3f6ebd2
-          command: pages deploy . --project-name=devhive-mkr
+          command: pages deploy dist --project-name=devhive-mkr --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
