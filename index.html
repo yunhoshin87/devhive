@@ -1957,9 +1957,26 @@ function submitForm(e) {
     status:  '신규',
     date:    new Date().toLocaleString('ko-KR'),
   };
+
   const existing = JSON.parse(localStorage.getItem('aidev_requests') || '[]');
   existing.unshift(request);
   localStorage.setItem('aidev_requests', JSON.stringify(existing));
+
+  const TG_TOKEN  = '85447330048:AAELMnTza1g4aJNx1GQF0TiZ0Vrzbq4KR78';
+  const TG_CHAT_ID = '7963497751';
+  const msg = `🔔 새 상담 신청\n\n`
+    + `👤 이름: ${request.name}\n`
+    + `📞 연락처: ${request.contact}\n`
+    + `📦 플랜: ${request.plan || '미정'}\n`
+    + `📝 내용:\n${request.content}`
+    + (request.ref ? `\n🔗 참고: ${request.ref}` : '')
+    + `\n\n🕐 ${request.date}`;
+
+  fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: msg })
+  }).catch(() => {});
 
   document.getElementById('form-wrap').style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
