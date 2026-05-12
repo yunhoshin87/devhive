@@ -937,6 +937,75 @@ ul { list-style: none; }
 /* ═══════════════════════════════════════════
    TRUST — Gray bg, 5-col
 ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   WHY TELEGRAM
+═══════════════════════════════════════════ */
+.why-tg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 56px;
+}
+.why-tg-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 32px 28px;
+  transition: background 0.2s;
+}
+.why-tg-card:hover { background: rgba(255,255,255,0.07); }
+.why-tg-card.featured {
+  border-color: rgba(42,171,238,0.5);
+  background: rgba(42,171,238,0.06);
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 32px;
+  align-items: center;
+}
+.why-tg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(42,171,238,0.15);
+  border: 1px solid rgba(42,171,238,0.4);
+  color: #2aabee;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+.why-tg-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+.why-tg-card.featured .why-tg-icon {
+  font-size: 64px;
+  margin-bottom: 0;
+  text-align: center;
+}
+.why-tg-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+.why-tg-card.featured h3 { font-size: 22px; }
+.why-tg-card p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+}
+.why-tg-card.featured p { font-size: 15px; color: rgba(255,255,255,0.6); }
+@media (max-width: 900px) {
+  .why-tg-grid { grid-template-columns: 1fr; }
+  .why-tg-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+  .why-tg-card.featured .why-tg-icon { margin-bottom: 16px; }
+}
+
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1438,6 +1507,52 @@ ul { list-style: none; }
         <h3>수정</h3>
         <p>고객 피드백을 반영해 결과물을 개선하고 다음 작업으로 넘어갑니다.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY TELEGRAM ═══ -->
+<section class="sec sec-dark" id="why-telegram">
+  <div class="wrap">
+    <div class="sec-head sec-head-c fu">
+      <div class="sec-eye">왜 텔레그램인가</div>
+      <h2 class="sec-h" style="color:white;">개발 소통 채널로<br>텔레그램을 선택한 이유</h2>
+      <p class="sec-sub" style="color:rgba(255,255,255,0.45);margin:0 auto;">이메일도, 슬랙도 아닌 텔레그램인 데는 이유가 있습니다.</p>
+    </div>
+
+    <div class="why-tg-grid fu">
+
+      <!-- 보안 — featured -->
+      <div class="why-tg-card featured">
+        <div class="why-tg-icon">🔒</div>
+        <div>
+          <div class="why-tg-badge">⭐ 최우선 이유</div>
+          <h3>업무 내용이 외부로 새지 않습니다</h3>
+          <p>텔레그램은 종단간 암호화(End-to-End Encryption)를 지원합니다. 고객이 보내는 기획 내용, 사업 아이디어, 개발 요청은 텔레그램 채널 밖으로 유출되지 않습니다. 별도 협업 툴에 민감한 내용을 올리거나, 외부 이메일로 주고받을 때 생기는 보안 리스크를 원천 차단합니다.</p>
+        </div>
+      </div>
+
+      <!-- 실시간 -->
+      <div class="why-tg-card">
+        <div class="why-tg-icon">⚡</div>
+        <h3>요청이 즉시 전달됩니다</h3>
+        <p>메시지를 보내면 알림이 바로 옵니다. 이메일처럼 하루를 기다리거나, 슬랙처럼 별도 계정을 만들 필요 없이 평소 쓰는 메신저로 실시간 소통합니다.</p>
+      </div>
+
+      <!-- 접근성 -->
+      <div class="why-tg-card">
+        <div class="why-tg-icon">📱</div>
+        <h3>별도 툴 설치가 필요 없습니다</h3>
+        <p>고객은 새로운 협업 툴을 배울 필요가 없습니다. 텔레그램 앱 하나로 요청, 확인, 피드백, 수정 지시까지 모든 소통을 처리합니다.</p>
+      </div>
+
+      <!-- 기록 -->
+      <div class="why-tg-card">
+        <div class="why-tg-icon">📋</div>
+        <h3>모든 대화가 자동으로 기록됩니다</h3>
+        <p>주고받은 요청, 확인사항, 수정 내역이 채팅 기록으로 남습니다. 나중에 "이렇게 말했잖아요"라는 분쟁이 생기지 않습니다.</p>
+      </div>
+
     </div>
   </div>
 </section>
